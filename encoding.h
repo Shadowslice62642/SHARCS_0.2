@@ -119,7 +119,7 @@ private:
 template<char pos_count, char ori_count>
 class ori_decoding {
 public:
-	ori_decoding() { }
+	ori_decoding() { ori_array.fill(0);  }
 	std::array<char, pos_count> operator()(uint64_t coord) {
 		for (int i = 0; i < pos_count; i++) {
 			ori_array[pos_count - i - 1] = coord % ori_count;
