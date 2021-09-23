@@ -49,9 +49,9 @@ template<char pos_count>
 class split_perm_encoding
 {
 public:
-	const char pos = pos_count;
-	const char piece;
-	const uint64_t max;
+	char pos = pos_count;
+	char piece;
+	uint64_t max;
 
 	split_perm_encoding() : piece(11), br(5) { max = factorial(pos_count);  } //default to 6/6 edges
 	split_perm_encoding(int piece_count, int break_point) : piece(piece_count - 1), br(break_point) { max = factorial(pos_count)/factorial(piece_count); }
