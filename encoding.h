@@ -1,8 +1,9 @@
 #pragma once
 #include <iostream>
 #include <math.h>
+#include <algorithm>
 
-//TODO rewrite with template args properly
+//Written with __popcnt so should be compiled with mvsc/ For gcc, replace with __builtin_popcount
 
 template<char pos_count>
 class perm_encoding
@@ -52,9 +53,10 @@ public:
 	char pos = pos_count;
 	char piece;
 	uint64_t max;
+	char br;
 
 	split_perm_encoding() : piece(11), br(5) { max = factorial(pos_count);  } //default to 6/6 edges
-	split_perm_encoding(int piece_count, int break_point) : piece(piece_count - 1), br(break_point) { max = factorial(pos_count)/factorial(piece_count); }
+	split_perm_encoding(int piece_count, int break_point) : piece(piece_count - 1), br(break_point) { max = factorial(pos_count)/factorial(break_point); }
 	uint64_t operator()(std::array<char, pos_count> perm_array) {
 		//preprocessing
 		for (int i = 0; i < pos_count; i++) {
@@ -70,7 +72,14 @@ public:
 			coord *= pos_count - i - 1;
 			seen += (1 << temp);
 		}
-		coord <<= 32;
+		coord <<= (int)log2(max)+1;
+		std::transform(perm_array.begin(), perm_array.end(), perm_array.begin(), [break_point = br](char x) -> char { return (x - break_point + pos_count) % pos_count; });
+		for (int i = 0; i < pos_count; i++) {
+			temp_array[perm_array[i]] = i;
+		}
+		for (int i = 0; i < br; i++) {
+			seen += (1 << (pos_count - temp_array[i] - 1));
+		}
 		for (int i = br; i < piece; i++) {
 			temp = pos_count - temp_array[i] - 1;
 			coord_temp += temp_array[i] - __popcnt(seen >> temp);
@@ -91,7 +100,6 @@ public:
 private:
 	std::array<char, pos_count> temp_array;
 	int seen = 0;
-	char br;
 	uint64_t coord = 0;
 	uint64_t temp = 0;
 	uint64_t coord_temp = 0;
@@ -103,7 +111,7 @@ public:
 	char pos = pos_count;
 	uint64_t max;
 	char ori = ori_count;
-	ori_encoding() { max = pow(ori_count, pos_count); } //default to corners;
+	ori_encoding() { max = pow(ori_count, pos_count-1); } //default to corners;
 	uint64_t operator()(std::array<char, pos_count> ori_array) {
 		coord = 0;
 		for (int i = 0; i < pos_count; i++) {

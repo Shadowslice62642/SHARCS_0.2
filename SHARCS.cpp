@@ -9,10 +9,10 @@
 #include "coord_move.h"
 
 //standard moves
-auto cp_moves = std::array<perm_move<8>, 18>{};
-auto ep_moves = std::array<perm_move<12>, 18>{};
-auto co_moves = std::array<ori_move<8, 3>, 18>{};
-auto eo_moves = std::array<ori_move<12, 2>, 18>{};
+auto cp_moves = std::array<perm_move<8>, 6>{};
+auto ep_moves = std::array<perm_move<12>, 9>{};
+auto co_moves = std::array<ori_move<8, 3>, 6>{};
+auto eo_moves = std::array<ori_move<12, 2>, 9>{};
 
 void loadStandardMoves() {
     //cp_moves
@@ -62,5 +62,5 @@ int main()
     for (int i = 0; i < 8; i++) {
         std::cout << (int)perm[i] << " ";
     }*/
-    makePruningTables(ep_moves, cp_moves, eo_moves, co_moves);
+    makeMoveTables<9,6>(ep_moves, cp_moves, eo_moves, co_moves);
 }
