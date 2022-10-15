@@ -1,13 +1,13 @@
-// SHARCS.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-using namespace std;
 
 #include <iostream>
 #include <chrono>
 #include <array>
 #include <stack>
 #include <string>
+
+using namespace std;
+using namespace std::chrono;
+
 #include "moves.h"
 #include "solving.h"
 
@@ -32,7 +32,7 @@ int main()
     cp_moves[4](cp);
     co_moves[4](co);
 
-    cout << "Permutation: ";
+    /*cout << "Permutation: ";
     for (int i = 0; i < 8; i++) {
         cout << (int)cp[i] << " ";
     }
@@ -40,21 +40,51 @@ int main()
     for (int i = 0; i < 8; i++) {
         cout << (int)co[i] << " ";
     }
-    cout << endl;
+    cout << endl;*/
 
     cc_moves[4](combined_corners);
     ce_moves[4](combined_edges);
     cc_moves[4](combined_corners);
     ce_moves[4](combined_edges);
+
     cc_moves[1](combined_corners);
     ce_moves[1](combined_edges);
     cc_moves[1](combined_corners);
     ce_moves[1](combined_edges);
 
-    cc_moves[4].print(combined_corners);
-    ce_moves[4].print(combined_edges);
-    cout << endl;
+    cc_moves[4](combined_corners);
+    ce_moves[4](combined_edges);
 
-    solve<8, 3, 4, 6, 12, 2, 4, 9>(cc_moves, ce_moves, combined_corners, combined_edges, 4, 1, 2);
+    cc_moves[3](combined_corners);
+    ce_moves[3](combined_edges);
+
+    cc_moves[5](combined_corners);
+    ce_moves[5](combined_edges);
+
+    cc_moves[0](combined_corners);
+    ce_moves[0](combined_edges);
+
+    cc_moves[1](combined_corners);
+    ce_moves[1](combined_edges);
+    cc_moves[1](combined_corners);
+    ce_moves[1](combined_edges);
+    cc_moves[1](combined_corners);
+    ce_moves[1](combined_edges);
+
+    cc_moves[2](combined_corners);
+    ce_moves[2](combined_edges);
+    cc_moves[2](combined_corners);
+    ce_moves[2](combined_edges);
+    cc_moves[2](combined_corners);
+    ce_moves[2](combined_edges);
+
+    auto start = high_resolution_clock::now();
+    solve<8, 3, 4, 6, 12, 2, 4, 9>(cc_moves, ce_moves, combined_corners, combined_edges, 12);
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    float seconds_duration = duration.count();
+    seconds_duration /= 1000000;
+    cout << "Solutions found in " << seconds_duration << " seconds"; 
+
 }
 
