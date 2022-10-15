@@ -2,42 +2,46 @@
 
 //define general moves on merged array
 template<char length, char ori, char oriented>
-class move
+class c_move
 {
 public:
+	
 	char len = length;
-	char _ori = ori;
+    string name;
 
-	move() : _permuting_array({0, 3, 2, 1}), _orienting_array({0, 0, 0, 0}) {} //defaults to U corner
-	move(std::array<char, oriented> permuting_array, std::array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) {}
-	void operator()(std::array<char, length> &piece_array) {
+	c_move() : _permuting_array({0, 3, 2, 1}), _orienting_array({0, 0, 0, 0}) {} //defaults to U corner
+	c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) {} //take move definition
+    c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array, string name) : _permuting_array(permuting_array), _orienting_array(orienting_array), name(name) {} //take move definition and name
+	void operator()(array<char, length> &piece_array) {
 		char x;
-		x = ((piece_array[_permuting_array[0]] & 15) + _orienting_array[0]) % _ori;
-        x += ((piece_array[_permuting_array[0]] >> 4) << 4);
+		x = ((piece_array[_permuting_array[0]] & 7) + _orienting_array[0]) % _ori;
+        x += ((piece_array[_permuting_array[0]] >> 3) << 3);
         for (int i = 0; i < oriented - 1; i++) {
-            piece_array[_permuting_array[i]] = ((piece_array[_permuting_array[i + 1]] & 15) + _orienting_array[i + 1]) % _ori;
-            piece_array[_permuting_array[i]] += ((piece_array[_permuting_array[i + 1]] >> 4) << 4);
+            piece_array[_permuting_array[i]] = ((piece_array[_permuting_array[i + 1]] & 7) + _orienting_array[i + 1]) % _ori;
+            piece_array[_permuting_array[i]] += ((piece_array[_permuting_array[i + 1]] >> 3) << 3);
         }
 		piece_array[_permuting_array[oriented - 1]] = x;
 	}
 
-    void print(std::array<char, length> piece_array) {
-        std::cout << "Permutation: ";
+    //print the state of given array
+    void print(array<char, length> piece_array) {
+        cout << "Permutation: ";
         for (int i = 0; i < len; i++) {
-            std::cout << ((int)piece_array[i] >> 4) << " ";
+            cout << ((int)piece_array[i] >> 3) << " ";
         }
-        std::cout << std::endl << "Orientation: ";
+        cout << endl << "Orientation: ";
 
         for (int i = 0; i < len; i++) {
-            std::cout << ((piece_array[i] & 15) % _ori) << " ";
+            cout << ((piece_array[i] & 7) % _ori) << " ";
         }
 
-        std::cout << std::endl;
+        cout << endl;
     }
 
 private:
-    std::array<char, oriented> _permuting_array;
-    std::array<char, oriented> _orienting_array;
+    array<char, oriented> _permuting_array;
+    array<char, oriented> _orienting_array;
+    char _ori = ori;
 };
 
 
@@ -50,8 +54,8 @@ public:
 	char _ori = ori;
 
 	ori_move() : _permuting_array({0, 3, 2, 1}), _orienting_array({0, 0, 0, 0}) {} //defaults to U corner
-	ori_move(std::array<char, oriented> permuting_array, std::array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) {}
-	void operator()(std::array<char, length> &ori_array) {
+	ori_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) {}
+	void operator()(array<char, length> &ori_array) {
 		char x;
 		x = (ori_array[_permuting_array[0]] + _orienting_array[0]) % _ori;
         for (int i = 0; i < oriented - 1; i++) {
@@ -60,9 +64,20 @@ public:
 		ori_array[_permuting_array[oriented - 1]] = x;
 	}
 
+    //print the state of given array
+    void print(array<char, length> piece_array) {
+        cout << endl << "Orientation: ";
+
+        for (int i = 0; i < len; i++) {
+            cout << piece_array[i] << " ";
+        }
+
+        cout << endl;
+    }
+
 private:
-    std::array<char, oriented> _permuting_array;
-    std::array<char, oriented> _orienting_array;
+    array<char, oriented> _permuting_array;
+    array<char, oriented> _orienting_array;
 };
 
 
@@ -75,8 +90,8 @@ public:
     char perm = permuted;
 
 	perm_move() {} //: _permuting_array({0,3,2,1}) {} //defaults to U
-	perm_move(std::array<char, permuted> permuting_array) : _permuting_array(permuting_array) {}
-	void operator()(std::array<char, length> &perm_array) {
+	perm_move(array<char, permuted> permuting_array) : _permuting_array(permuting_array) {}
+	void operator()(array<char, length> &perm_array) {
 		char x;
         x = perm_array[_permuting_array[0]];
         for (int i = 0; i < perm - 1; i++) {
@@ -86,10 +101,10 @@ public:
 	}
 
 private:
-	std::array<char, permuted> _permuting_array;
+	array<char, permuted> _permuting_array;
 };
 
-void loadStandardMoves(std::array<perm_move<8, 4>, 6> &cp_moves, std::array<perm_move<12, 4>, 9> &ep_moves, std::array<ori_move<8, 3, 4>, 6> &co_moves, std::array<ori_move<12, 2, 4>, 9> &eo_moves, std::array<move<8, 3, 4>, 6> &cc_moves) {
+void loadStandardMoves(array<perm_move<8, 4>, 6> &cp_moves, array<perm_move<12, 4>, 9> &ep_moves, array<ori_move<8, 3, 4>, 6> &co_moves, array<ori_move<12, 2, 4>, 9> &eo_moves) {
     
     //cp_moves
     cp_moves[0] = perm_move<8, 4>({0, 3, 2, 1}); // U
@@ -125,12 +140,26 @@ void loadStandardMoves(std::array<perm_move<8, 4>, 6> &cp_moves, std::array<perm
     eo_moves[6] = ori_move<12, 2, 4>({0, 10, 8, 2}, {1, 1, 1, 1}); // M
     eo_moves[7] = ori_move<12, 2, 4>({1, 9, 11, 3}, {1, 1, 1, 1}); // S
     eo_moves[8] = ori_move<12, 2, 4>({4, 5, 6, 7}, {1, 1, 1, 1}); // E
+}
+
+void loadStandardMoves(array<c_move<8, 3, 4>, 6> &cc_moves, array<c_move<12, 2, 4>, 9> &ce_moves) {
 
     //combined corner_moves
-    cc_moves[0] = move<8, 3, 4>({0, 3, 2, 1}, {0, 0, 0, 0}); // U
-    cc_moves[1] = move<8, 3, 4>({4, 7, 6, 5}, {0, 0, 0, 0}); // D
-    cc_moves[2] = move<8, 3, 4>({2, 3, 6, 7}, {1, 2, 1, 2}); // R
-    cc_moves[3] = move<8, 3, 4>({0, 1, 4, 5}, {1, 2, 1, 2}); // L
-    cc_moves[4] = move<8, 3, 4>({0, 5, 6, 3}, {2, 1, 2, 1}); // F
-    cc_moves[5] = move<8, 3, 4>({1, 2, 7, 4}, {1, 2, 1, 2}); // B
+    cc_moves[0] = c_move<8, 3, 4>({0, 3, 2, 1}, {0, 0, 0, 0}, "U"); // U
+    cc_moves[1] = c_move<8, 3, 4>({4, 7, 6, 5}, {0, 0, 0, 0}, "D"); // D
+    cc_moves[2] = c_move<8, 3, 4>({2, 3, 6, 7}, {1, 2, 1, 2}, "R"); // R
+    cc_moves[3] = c_move<8, 3, 4>({0, 1, 4, 5}, {1, 2, 1, 2}, "L"); // L
+    cc_moves[4] = c_move<8, 3, 4>({0, 5, 6, 3}, {2, 1, 2, 1}, "F"); // F
+    cc_moves[5] = c_move<8, 3, 4>({1, 2, 7, 4}, {1, 2, 1, 2}, "B"); // B
+
+    //combined edge_moves
+    ce_moves[0] = c_move<12, 2, 4>({0, 3, 2, 1}, {0, 0, 0, 0}, "U"); // U
+    ce_moves[1] = c_move<12, 2, 4>({8, 11, 10, 9}, {0, 0, 0, 0}, "D"); // D
+    ce_moves[2] = c_move<12, 2, 4>({3, 6, 11, 7}, {0, 0, 0, 0}, "R"); // R
+    ce_moves[3] = c_move<12, 2, 4>({1, 4, 9, 5}, {0, 0, 0, 0}, "L"); // L
+    ce_moves[4] = c_move<12, 2, 4>({0, 5, 10, 6}, {1, 1, 1, 1}, "F"); // F
+    ce_moves[5] = c_move<12, 2, 4>({2, 7, 8, 4}, {1, 1, 1, 1}, "B"); // B
+    ce_moves[6] = c_move<12, 2, 4>({0, 10, 8, 2}, {1, 1, 1, 1}, "M"); // M
+    ce_moves[7] = c_move<12, 2, 4>({1, 9, 11, 3}, {1, 1, 1, 1}, "S"); // S
+    ce_moves[8] = c_move<12, 2, 4>({4, 5, 6, 7}, {1, 1, 1, 1}, "E"); // E
 }
