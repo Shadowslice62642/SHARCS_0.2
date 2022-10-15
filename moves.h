@@ -11,31 +11,24 @@ public:
     char move_order;
 
 	c_move() : _permuting_array({0, 3, 2, 1}), _orienting_array({0, 0, 0, 0}) {} //defaults to U corner
-     //take move definition and find move order
+
+    //take move definition and find move order
 	c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) {
 
-        array<char,oriented> piece_array;
-        for (int i = 0; i < piece_array.size(); i++) { piece_array[i] = (i <<= 3); }
+        array<char,length> piece_array;
+        for (int i = 0; i < length; i++) { piece_array[i] = (i << 3); }
         
         char mo = 0;
-        bool solved = false;
-        char x;
+        bool identity = false;
         
-        while (!solved) {
-            x = ((piece_array[_permuting_array[0]] & 7) + _orienting_array[0]) % _ori;
-            x += ((piece_array[_permuting_array[0]] >> 3) << 3);
-            for (int i = 0; i < oriented - 1; i++) {
-                piece_array[_permuting_array[i]] = ((piece_array[_permuting_array[i + 1]] & 7) + _orienting_array[i + 1]) % _ori;
-                piece_array[_permuting_array[i]] += ((piece_array[_permuting_array[i + 1]] >> 3) << 3);
-            }
-            piece_array[_permuting_array[oriented - 1]] = x;
-            solved = ((piece_array[0] >> 3) == 0) && ((piece_array[0] & 7) == 0);
-            for (int k = 1; k < piece_array.size(); k++) {
-                solved &= ((piece_array[k] >> 3) == k) && ((piece_array[k] & 7) == 0);
-            }
+        while (!identity) {
+            (*this)(piece_array);
+            identity = solved(piece_array);
             mo++;
         }
+
         move_order = mo;
+        cout << name << " " << (int)move_order << endl;
     }
     //take move definition and name and find move order
     c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array, string name) : _permuting_array(permuting_array), _orienting_array(orienting_array), name(name) {
