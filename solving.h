@@ -4,10 +4,11 @@ template<char corner_count, char corner_ori, char corner_orientation, char corne
 bool solve(array<c_move<corner_count, corner_ori, corner_orientation>, corner_moves> &cc_moves, array<c_move<edge_count, edge_ori, edge_orientation>, edge_moves> &ce_moves, array<char, corner_count> &corners, array<char, edge_count> &edges, char max_depth, stack<string> &solution, char last_move) {
     bool solved = false;
     char i = 0;
+    char j = 1
     char move_count = (corner_moves < edge_moves) ? corner_moves : edge_moves;
     while ( !solved && i < move_count ) {
         if (i == last_move) { i++; continue; }
-        char j = 1;
+        j = 1;
         while (j < cc_moves[i].move_order) {
             cc_moves[i](corners);
             ce_moves[i](edges);

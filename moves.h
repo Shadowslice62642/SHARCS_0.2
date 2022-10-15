@@ -11,11 +11,8 @@ public:
     char move_order;
 
 	c_move() : _permuting_array({0, 3, 2, 1}), _orienting_array({0, 0, 0, 0}) {} //defaults to U corner
-
-    //take move definition and find move order
-	c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) { calculate_order(); }
-    //take move definition and name and find move order
-    c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array, string name) : _permuting_array(permuting_array), _orienting_array(orienting_array), name(name) { calculate_order(); }
+    c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) { calculate_order(); } //take move definition and find move order
+    c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array, string name) : _permuting_array(permuting_array), _orienting_array(orienting_array), name(name) { calculate_order(); } //take move definition and name and find move order
 
 	void operator()(array<char, length> &piece_array) {
 		char x;
@@ -58,11 +55,9 @@ public:
             cout << ((int)piece_array[i] >> 3) << " ";
         }
         cout << endl << "Orientation: ";
-
         for (int i = 0; i < len; i++) {
             cout << ((piece_array[i] & 7) % _ori) << " ";
         }
-
         cout << endl;
     }
 
