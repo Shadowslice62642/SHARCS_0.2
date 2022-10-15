@@ -3,6 +3,8 @@
         "ostream": "cpp",
         "array": "cpp",
         "iostream": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "type_traits": "cpp",
+        "xutility": "cpp"
     }
 }
