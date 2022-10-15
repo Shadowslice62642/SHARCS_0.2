@@ -1,5 +1,46 @@
 #pragma once
 
+//define general moves on merged array
+template<char length, char ori, char oriented>
+class move
+{
+public:
+	char len = length;
+	char _ori = ori;
+
+	move() : _permuting_array({0, 3, 2, 1}), _orienting_array({0, 0, 0, 0}) {} //defaults to U corner
+	move(std::array<char, oriented> permuting_array, std::array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) {}
+	void operator()(std::array<char, length> &piece_array) {
+		char x;
+		x = ((piece_array[_permuting_array[0]] & 15) + _orienting_array[0]) % _ori;
+        x += ((piece_array[_permuting_array[0]] >> 4) << 4);
+        for (int i = 0; i < oriented - 1; i++) {
+            piece_array[_permuting_array[i]] = ((piece_array[_permuting_array[i + 1]] & 15) + _orienting_array[i + 1]) % _ori;
+            piece_array[_permuting_array[i]] += ((piece_array[_permuting_array[i + 1]] >> 4) << 4);
+        }
+		piece_array[_permuting_array[oriented - 1]] = x;
+	}
+
+    void print(std::array<char, length> piece_array) {
+        std::cout << "Permutation: ";
+        for (int i = 0; i < len; i++) {
+            std::cout << ((int)piece_array[i] >> 4) << " ";
+        }
+        std::cout << std::endl << "Orientation: ";
+
+        for (int i = 0; i < len; i++) {
+            std::cout << ((piece_array[i] & 15) % _ori) << " ";
+        }
+
+        std::cout << std::endl;
+    }
+
+private:
+    std::array<char, oriented> _permuting_array;
+    std::array<char, oriented> _orienting_array;
+};
+
+
 //define general orientation moves
 template<char length, char ori, char oriented>
 class ori_move
@@ -48,7 +89,7 @@ private:
 	std::array<char, permuted> _permuting_array;
 };
 
-void loadStandardMoves(std::array<perm_move<8, 4>, 6> &cp_moves, std::array<perm_move<12, 4>, 9> &ep_moves, std::array<ori_move<8, 3, 4>, 6> &co_moves, std::array<ori_move<12, 2, 4>, 9> &eo_moves) {
+void loadStandardMoves(std::array<perm_move<8, 4>, 6> &cp_moves, std::array<perm_move<12, 4>, 9> &ep_moves, std::array<ori_move<8, 3, 4>, 6> &co_moves, std::array<ori_move<12, 2, 4>, 9> &eo_moves, std::array<move<8, 3, 4>, 6> &cc_moves) {
     
     //cp_moves
     cp_moves[0] = perm_move<8, 4>({0, 3, 2, 1}); // U
@@ -84,4 +125,12 @@ void loadStandardMoves(std::array<perm_move<8, 4>, 6> &cp_moves, std::array<perm
     eo_moves[6] = ori_move<12, 2, 4>({0, 10, 8, 2}, {1, 1, 1, 1}); // M
     eo_moves[7] = ori_move<12, 2, 4>({1, 9, 11, 3}, {1, 1, 1, 1}); // S
     eo_moves[8] = ori_move<12, 2, 4>({4, 5, 6, 7}, {1, 1, 1, 1}); // E
+
+    //combined corner_moves
+    cc_moves[0] = move<8, 3, 4>({0, 3, 2, 1}, {0, 0, 0, 0}); // U
+    cc_moves[1] = move<8, 3, 4>({4, 7, 6, 5}, {0, 0, 0, 0}); // D
+    cc_moves[2] = move<8, 3, 4>({2, 3, 6, 7}, {1, 2, 1, 2}); // R
+    cc_moves[3] = move<8, 3, 4>({0, 1, 4, 5}, {1, 2, 1, 2}); // L
+    cc_moves[4] = move<8, 3, 4>({0, 5, 6, 3}, {2, 1, 2, 1}); // F
+    cc_moves[5] = move<8, 3, 4>({1, 2, 7, 4}, {1, 2, 1, 2}); // B
 }
