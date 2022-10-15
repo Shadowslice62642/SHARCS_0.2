@@ -28,26 +28,9 @@ public:
         }
 
         move_order = mo;
-        cout << name << " " << (int)move_order << endl;
     }
     //take move definition and name and find move order
-    c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array, string name) : _permuting_array(permuting_array), _orienting_array(orienting_array), name(name) {
-        
-        array<char,length> piece_array;
-        for (int i = 0; i < length; i++) { piece_array[i] = (i << 3); }
-        
-        char mo = 0;
-        bool identity = false;
-        
-        while (!identity) {
-            (*this)(piece_array);
-            identity = solved(piece_array);
-            mo++;
-        }
-
-        move_order = mo;
-        cout << name << " " << (int)move_order << endl;
-    }
+    c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array, string name) : _permuting_array(permuting_array), _orienting_array(orienting_array), name(name) { cmove(permuting_array, orienting_array); }
 
 	void operator()(array<char, length> &piece_array) {
 		move(piece_array);
