@@ -78,13 +78,10 @@ int main()
     cc_moves[2](combined_corners);
     ce_moves[2](combined_edges);
 
-    auto start = high_resolution_clock::now();
-    solve<8, 3, 4, 6, 12, 2, 4, 9>(cc_moves, ce_moves, combined_corners, combined_edges, 12);
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    float seconds_duration = duration.count();
-    seconds_duration /= 1000000;
-    cout << "Solutions found in " << seconds_duration << " seconds"; 
+    cc_moves[0](combined_corners);
+    ce_moves[0](combined_edges);
 
+    solve<8, 3, 4, 6, 12, 2, 4, 9>(cc_moves, ce_moves, combined_corners, combined_edges, 12);
+    
 }
 

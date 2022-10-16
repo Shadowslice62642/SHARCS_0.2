@@ -13,7 +13,7 @@ public:
 	c_move() : _permuting_array({0, 3, 2, 1}), _orienting_array({0, 0, 0, 0}) {} //defaults to U corner
     c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array) : _permuting_array(permuting_array), _orienting_array(orienting_array) { calculate_order(); } //take move definition and find move order
     c_move(array<char, oriented> permuting_array, array<char, oriented> orienting_array, string name) : _permuting_array(permuting_array), _orienting_array(orienting_array), name(name) { calculate_order(); } //take move definition and name and find move order
-
+    
 	void operator()(array<char, length> &piece_array) {
 		char x;
 		x = ((piece_array[_permuting_array[0]] & 7) + _orienting_array[0]) % _ori;
@@ -64,6 +64,7 @@ public:
 private:
     array<char, oriented> _permuting_array;
     array<char, oriented> _orienting_array;
+    array<char, oriented> _solved_state;
     char _ori = ori;
 };
 
