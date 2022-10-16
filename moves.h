@@ -1,5 +1,83 @@
 #pragma once
 
+template<
+        template<char, char, char> class corner_move, char corner_length, char corner_ori, char corner_oriented, 
+        template<char, char, char> class edge_move, char edge_length, char edge_ori, char edge_oriented,
+        uint64_t movecount>
+class movepair
+{
+    corner_move<corner_length, corner_ori, corner_oriented> _corners;
+    edge_move<edge_length, edge_ori, edge_oriented> _edges;
+
+    movepair(corner_move<corner_length, corner_ori, corner_oriented> cmoves, edge_move<edge_length, edge_ori, edge_oriented> emoves) : _corners(cmoves), _edges(emoves) {};
+    void operator() (array<char, corner_length> &corners, array<char, edge_length> &edges) {
+        //cmoves
+    }
+};
+
+template<
+        template<char, char, char> class corner_move, char corner_length, char corner_ori, char corner_oriented, 
+        template<char, char, char> class edge_move, char edge_length, char edge_ori, char edge_oriented,
+        uint64_t movecount>
+class puzzle
+{
+public:
+    array<corner_move<corner_length, corner_ori, corner_oriented>, movecount> _corner_moves;
+    array<edge_move<edge_length, edge_ori, edge_oriented>, movecount> _edge_moves;
+    array<char, movecount> move_orders;
+    array<string, movecount> move_names;
+
+    puzzle(array<corner_move<corner_length, corner_ori, corner_oriented>, movecount> corner_moves, array<edge_move<edge_length, edge_ori, edge_oriented>, movecount> edge_moves):
+                _corner_moves(corner_moves), _edge_moves(edge_moves) { calculate_orders(); GetNames(); };
+
+    void operator[] (int i) {
+        return _corner_moves[i];
+    }
+
+    void calculate_orders() {
+        char mo;
+        bool identity;
+        array<char, corner_length> corner_array;
+        array<char, edge_length> edge_array;
+        for(char move = 0; move < movecount; move++){
+            mo = 0;
+            identity = false;
+            
+            for (char i = 0; i < corner_length; i++) { corner_array[i] = (i << 3); }
+            for (char i = 0; i < edge_length; i++) { edge_array[i] = (i << 3); }
+            
+            while (!identity) {
+                _corner_moves[move](corner_array);
+                _edge_moves[move](edge_array);
+                identity = solved(corner_array, edge_array);
+                mo++;
+            }
+
+            move_orders[move] = mo;
+
+        }
+    }
+
+    bool solved(array<char, corner_length> corner_array, array<char, edge_length> edge_array) {
+        bool solved = ((corner_array[0] >> 3) == 0) && ((corner_array[0] & 0b00000111) == 0);
+        for (char i = 1; i < corner_length; i++) {
+            solved &= ((corner_array[i] >> 3) == i) && ((corner_array[i] & 0b00000111) == 0);
+        }
+        for (char i = 0; i < edge_length; i++) {
+            solved &= ((edge_array[i] >> 3) == i) && ((edge_array[i] & 0b00000111) == 0);
+        }
+        return solved;
+    }
+
+    void GetNames() {
+        for(int i = 0; i < movecount; i++) {
+            move_names[i] = _corner_moves[i].name;
+        }
+    }
+
+};
+
+
 //define general moves on merged array
 template<char length, char ori, char oriented>
 class c_move
@@ -19,8 +97,8 @@ public:
 		x = ((piece_array[_permuting_array[0]] & 7) + _orienting_array[0]) % _ori;
         x += ((piece_array[_permuting_array[0]] >> 3) << 3);
         for (int i = 0; i < oriented - 1; i++) {
-            piece_array[_permuting_array[i]] = ((piece_array[_permuting_array[i + 1]] & 7) + _orienting_array[i + 1]) % _ori;
-            piece_array[_permuting_array[i]] += ((piece_array[_permuting_array[i + 1]] >> 3) << 3);
+            piece_array[_permuting_array[i]] = ((piece_array[_permuting_array[i + 1]] & 0b00000111) + _orienting_array[i + 1]) % _ori;
+            piece_array[_permuting_array[i]] += (piece_array[_permuting_array[i + 1]] & 0b11111000);
         }
 		piece_array[_permuting_array[oriented - 1]] = x;
 	}
@@ -166,7 +244,7 @@ void loadStandardMoves(array<perm_move<8, 4>, 6> &cp_moves, array<perm_move<12, 
     eo_moves[8] = ori_move<12, 2, 4>({4, 5, 6, 7}, {1, 1, 1, 1}); // E
 }
 
-void loadStandardMoves(array<c_move<8, 3, 4>, 6> &cc_moves, array<c_move<12, 2, 4>, 9> &ce_moves) {
+void loadStandardMoves(array<c_move<8, 3, 4>, 6> &cc_moves, array<c_move<12, 2, 4>, 6> &ce_moves) {
 
     //combined corner_moves
     cc_moves[0] = c_move<8, 3, 4>({0, 3, 2, 1}, {0, 0, 0, 0}, "U"); // U
@@ -183,7 +261,7 @@ void loadStandardMoves(array<c_move<8, 3, 4>, 6> &cc_moves, array<c_move<12, 2, 
     ce_moves[3] = c_move<12, 2, 4>({1, 4, 9, 5}, {0, 0, 0, 0}, "L"); // L
     ce_moves[4] = c_move<12, 2, 4>({0, 5, 10, 6}, {1, 1, 1, 1}, "F"); // F
     ce_moves[5] = c_move<12, 2, 4>({2, 7, 8, 4}, {1, 1, 1, 1}, "B"); // B
-    ce_moves[6] = c_move<12, 2, 4>({0, 10, 8, 2}, {1, 1, 1, 1}, "M"); // M
-    ce_moves[7] = c_move<12, 2, 4>({1, 9, 11, 3}, {1, 1, 1, 1}, "S"); // S
-    ce_moves[8] = c_move<12, 2, 4>({4, 5, 6, 7}, {1, 1, 1, 1}, "E"); // E
+    //ce_moves[6] = c_move<12, 2, 4>({0, 10, 8, 2}, {1, 1, 1, 1}, "M"); // M
+    //ce_moves[7] = c_move<12, 2, 4>({1, 9, 11, 3}, {1, 1, 1, 1}, "S"); // S
+    //ce_moves[8] = c_move<12, 2, 4>({4, 5, 6, 7}, {1, 1, 1, 1}, "E"); // E
 }

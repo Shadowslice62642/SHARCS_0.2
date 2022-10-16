@@ -17,7 +17,7 @@ auto ep_moves = array<perm_move<12, 4>, 9>{};
 auto co_moves = array<ori_move<8, 3, 4>, 6>{};
 auto eo_moves = array<ori_move<12, 2, 4>, 9>{};
 auto cc_moves = array<c_move<8, 3, 4>, 6>{};
-auto ce_moves = array<c_move<12, 2, 4>, 9>{};
+auto ce_moves = array<c_move<12, 2, 4>, 6>{};
 
 int main()
 {
@@ -81,7 +81,13 @@ int main()
     cc_moves[0](combined_corners);
     ce_moves[0](combined_edges);
 
-    solve<8, 3, 4, 6, 12, 2, 4, 9>(cc_moves, ce_moves, combined_corners, combined_edges, 12);
+    auto puzzle1 = puzzle(cc_moves, ce_moves);
+
+    for (int i = 0; i < 6; i++) {
+        cout << puzzle1.move_names[i] << " " << (int)puzzle1.move_orders[i] << endl;
+    }
+
+    //solve<8, 3, 4, 6, 12, 2, 4, 9>(cc_moves, ce_moves, combined_corners, combined_edges, 12);
     
 }
 
